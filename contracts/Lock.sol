@@ -30,5 +30,11 @@ contract TipContract {
     mapping(address addr => Tip) public senders;
     mapping(address owner => TipJar) public tipJars;
 
-    function createTipJar(address owner, string memory ownerName) public {}
+    event TipJarCreation(address owner, string ownername, uint date)
+
+    function createTipJar(address owner, string memory ownerName, uint date) public{
+        tipJars[owner] = TipJar(0, owner, ownerName, date, []);
+        
+        emit TipJarCreation(owner, ownername, date, 'sucess')
+    }
 }
