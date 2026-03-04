@@ -30,6 +30,11 @@ contract TipContract {
     mapping(address addr => Tip) public senders;
     mapping(address owner => TipJar) public tipJars;
 
+    //allowable tokens in the system
+    uint[] public tokens;
+
+    //to-do create a modifier to check if the token address is allowed to be used for tips
+
     event TipJarCreation(address owner, string ownername, uint date)
 
     function createTipJar(address owner, string memory ownerName, uint date) public{
@@ -37,4 +42,8 @@ contract TipContract {
         
         emit TipJarCreation(owner, ownername, date, 'sucess')
     }
+
+    // fucntion allowTokenForTips(address tokenAddress) public{
+    //     token
+    // }
 }
