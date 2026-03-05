@@ -6,22 +6,21 @@ pragma solidity ^0.8.28;
 
 contract TipContract {
     struct Token {
-        string name;
         string ticker;
-        string amount;
+        uint amount;
+        address tokenAddress;
     }
 
     struct Tip {
         address sender;
-        uint amount;
         string message;
         Token token;
-        uint data;
+        uint date;
     }
 
     struct TipJar {
         uint balance;
-        address payable owner;
+        address owner;
         string ownerName;
         uint date;
         Tip[] tips;
@@ -31,19 +30,39 @@ contract TipContract {
     mapping(address owner => TipJar) public tipJars;
 
     //allowable tokens in the system
-    uint[] public tokens;
+    mapping (address => bool) public tokens;
 
-    //to-do create a modifier to check if the token address is allowed to be used for tips
+    event TipJarCreation(address owner, string ownername, uint date);
+    event AddedTokenToTokenList(address tokenAddr);
 
-    event TipJarCreation(address owner, string ownername, uint date)
+    modifier checkIfAllowedToken(address _tokenAddr){
+        require(tokens[_tokenAddr], "Tipped token is not allowed");
+        _;
+    }
+    
+    function allowTokenForTips(address tokenAddress) public{
+        require(tokens[tokenAddress], "This token si already allowed by the system");
+        tokens[tokenAddress] = true;
 
-    function createTipJar(address owner, string memory ownerName, uint date) public{
-        tipJars[owner] = TipJar(0, owner, ownerName, date, []);
-        
-        emit TipJarCreation(owner, ownername, date, 'sucess')
+        emit AddedTokenToTokenList(tokenAddress);
     }
 
-    // fucntion allowTokenForTips(address tokenAddress) public{
-    //     token
-    // }
+    function removeTokenForTips(address tokenAddress) public {
+        require(tokens[tokenAddress] == false, "This token has already been removed from the system");
+
+        tokens[tokenAddress] = false;
+    }
+
+    function createTipJar(address owner, string calldata ownerName, uint date) public{
+        require(tipJars[owner].owner == address(0), "There is an existing jar for this user");
+
+        TipJar storage newjar = tipJars[owner];
+        newjar.balance = 0;
+        newjar.owner = owner;
+        newjar.ownerName = ownerName;
+        newjar.date = date;
+        
+        emit TipJarCreation(owner, ownerName, date);
+    }
+
 }
