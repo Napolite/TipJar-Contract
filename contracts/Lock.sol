@@ -35,9 +35,12 @@ contract TipContract {
 
     event TipJarCreation(address owner, string ownername, uint date);
     event AddedTokenToTokenList(address tokenAddr);
+    event RemovedTokenFromTokenList(address tokenAddr);
+
     event TipOwner(address owner, address sender, Tip tip);
     event JarActivated(address owner);
     event JarDeActivated(address owner);
+    event TipJarTransferred(address owner, string ownerName);
 
 
     modifier checkIfAllowedToken(address _tokenAddr){
@@ -62,6 +65,9 @@ contract TipContract {
         require(tokens[tokenAddress], "This token has already been removed from the system");
 
         tokens[tokenAddress] = false;
+
+        emit RemovedTokenFromTokenList(tokenAddress);
+
     }
 
     function createTipJar(address owner, string calldata ownerName, uint date) public {
@@ -110,5 +116,15 @@ contract TipContract {
     function deactivateTipJar(address owner) public checkIfJarIsActive(owner){
       tipJars[owner].isActive = false;
       emit JarDeActivated(owner);
+    }
+
+    function transferOwnership(address newOwner, string calldata ownerName, uint date) public checkIfJarIsActive(msg.sender){
+        TipJar storage oldOwner = tipJars[msg.sender];
+        oldOwner.ownerName = ownerName;
+        oldOwner.date = date;
+
+        tipJars[newOwner] = oldOwner;
+
+        emit TipJarTransferred(newOwner, ownerName);
     }
 }
