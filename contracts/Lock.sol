@@ -34,6 +34,7 @@ contract TipContract {
 
     event TipJarCreation(address owner, string ownername, uint date);
     event AddedTokenToTokenList(address tokenAddr);
+    event TipOwner(address owner, address sender, Tip tip);
 
     modifier checkIfAllowedToken(address _tokenAddr){
         require(tokens[_tokenAddr], "Tipped token is not allowed");
@@ -41,7 +42,7 @@ contract TipContract {
     }
     
     function allowTokenForTips(address tokenAddress) public{
-        require(tokens[tokenAddress], "This token si already allowed by the system");
+        require(tokens[tokenAddress], "This token is already allowed by the system");
         tokens[tokenAddress] = true;
 
         emit AddedTokenToTokenList(tokenAddress);
@@ -77,5 +78,9 @@ contract TipContract {
         
         tipJar.balance += token.amount;
 
+        emit TipOwner(owner, sender, tip);
+
     }
+
+  
 }
