@@ -82,7 +82,6 @@ contract TipContract {
         emit TipJarCreation(owner, ownerName, date);
     }
 
-
     function addTipForOwner(address owner, Token calldata token, address sender, string calldata message, uint date)
      public 
      checkIfAllowedToken(token.tokenAddress) 
@@ -119,12 +118,22 @@ contract TipContract {
     }
 
     function transferOwnership(address newOwner, string calldata ownerName, uint date) public checkIfJarIsActive(msg.sender){
+
+        require(newOwner != address(0), "Invalid address");
+        require(newOwner != msg.sender, "Already owner");
+        require(tipJars[newOwner].owner == address(0), "Owner already has jar");
         TipJar storage oldOwner = tipJars[msg.sender];
         oldOwner.ownerName = ownerName;
         oldOwner.date = date;
+        oldOwner.owner = newOwner;
 
         tipJars[newOwner] = oldOwner;
+        delete tipJars[msg.sender];
 
         emit TipJarTransferred(newOwner, ownerName);
     }
+
+    // function getTopTippers(address owner) public view returns (address[] memory){
+    //     require(tipJars[owner].owner)
+    // }
 }
