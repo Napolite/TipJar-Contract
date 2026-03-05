@@ -78,9 +78,13 @@ contract TipContract {
         
         tipJar.balance += token.amount;
 
-        emit TipOwner(owner, sender, tip);
-
+        emit TipOwner(owner, sender,Tip({sender:sender, message:message, token: token, date:date}));
     }
 
-  
+    function getTipsForOwner(address owner) public view returns (TipJar memory){
+
+        require(tipJars[owner].owner!= address(0), "No tipjars exist for this owner");
+
+        return tipJars[owner];
+    }
 }
