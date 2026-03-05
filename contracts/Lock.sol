@@ -24,6 +24,7 @@ contract TipContract {
         string ownerName;
         uint date;
         Tip[] tips;
+        bool isActive;
     }
 
     mapping(address addr => Tip) public senders;
@@ -40,16 +41,21 @@ contract TipContract {
         require(tokens[_tokenAddr], "Tipped token is not allowed");
         _;
     }
+
+    modifier checkIfJarIsActive(address owner) {
+        require(tipJars[owner].isActive, "This tipJar cannot currenyl receive tips");
+        _;
+    }
     
     function allowTokenForTips(address tokenAddress) public{
-        require(tokens[tokenAddress], "This token is already allowed by the system");
+        require(!tokens[tokenAddress], "This token is already allowed by the system");
         tokens[tokenAddress] = true;
 
         emit AddedTokenToTokenList(tokenAddress);
     }
 
     function removeTokenForTips(address tokenAddress) public {
-        require(tokens[tokenAddress] == false, "This token has already been removed from the system");
+        require(tokens[tokenAddress], "This token has already been removed from the system");
 
         tokens[tokenAddress] = false;
     }
@@ -87,4 +93,6 @@ contract TipContract {
 
         return tipJars[owner];
     }
+
+    // function updateOwnerName
 }
