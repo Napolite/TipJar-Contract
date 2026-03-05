@@ -65,4 +65,17 @@ contract TipContract {
         emit TipJarCreation(owner, ownerName, date);
     }
 
+
+    function addTipForOwner(address owner, Token calldata token, address sender, string calldata message, uint date) public checkIfAllowedToken(token.tokenAddress){
+        require(token.amount > 0, "Cannot tip 0 tokens");
+        
+        TipJar storage tipJar = tipJars[owner];
+
+        require(tipJar.owner!= address(0), "No tipjars exist for this owner");
+
+        tipJar.tips.push(Tip({sender:sender, message:message, token: token, date:date}));
+        
+        tipJar.balance += token.amount;
+
+    }
 }
