@@ -106,7 +106,7 @@ contract TipContract {
     }
 
     function activateTipJar(address owner) public{
-        TipJar memory tipJar = tipJars[owner];
+        TipJar storage tipJar = tipJars[owner];
         require(!tipJar.isActive, "This tipjar is already active");
         tipJar.isActive = true;
         emit JarDeActivated(owner);
